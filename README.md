@@ -1,5 +1,3 @@
-Welcome to your new TanStack app! 
-
 # Getting Started
 
 To run this application:
@@ -17,21 +15,11 @@ To build this application for production:
 npm run build
 ```
 
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
-
-```bash
-npm run test
-```
-
 ## Styling
 
 This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
 
-
 ## Linting & Formatting
-
 
 This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
 
@@ -41,9 +29,8 @@ npm run format
 npm run check
 ```
 
-
-
 ## Routing
+
 This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
 
 ### Adding A Route
@@ -54,248 +41,86 @@ TanStack will automatically generate the content of the route file for you.
 
 Now that you have two routes you can use a `Link` component to navigate between them.
 
-### Adding Links
+## Checklist \_\_\_/400 pts
 
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
+## 🚀 UI Deployment
 
-```tsx
-import { Link } from "@tanstack/react-router";
-```
+- [] **Deployment Platform:** Successfully deploy the UI on one of the following platforms: GitHub Pages, Netlify, Vercel, Cloudflare Pages, or a similar service.
 
-Then anywhere in your JSX you can use it like so:
+## ✅ Requirements to Commits and Repository
 
-```tsx
-<Link to="/about">About</Link>
-```
+- [✅] **Commit guidelines compliance:** Ensure that all commits follow the specified commit guidelines, thereby promoting a clear and consistent commit history. This includes using meaningful commit messages that accurately describe the changes made.
 
-This will create a link that will navigate to the `/about` route.
+- [✅] **Checklist included in README.md:** Include the project's checklist in the README.md file. Mark all implemented features to provide a clear overview of the project's completion status.
 
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
+- [✅] **Score calculation:** Use this checklist to calculate your score. Check all implemented features, then calculate your score and put it at the top of the `README.md`.
 
-### Using A Layout
+- [✅] **UI Deployment link in README.md**: Place the link to the deployed UI at the top of the README.md file, alongside the calculated score.
 
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
+## Basic Structure (80 points)
 
-Here is an example layout that includes a header:
+- [✅] **Two Views (10 points):** Implement two primary views: "Garage" and "Winners".
+- [✅] **Garage View Content (30 points):** The "Garage" view must display:
+  - [✅] Name of view
+  - [✅] Car creation and editing panel
+  - [] Race control panel
+  - ✅ ] Garage section
+- [ ] **Winners View Content (10 points):** The "Winners" view should display:
+  - [ ] Name of view ("Winners")
+  - [ ] Winners table
+  - [ ] Pagination
+- [✅] **Persistent State (30 points):** Ensure the view state remains consistent when navigating between views. This includes preserving page numbers and input states. For example, page number shouldn't be reset, input controls should contain that they contained before switching, etc.
 
-```tsx
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+## Garage View (90 points)
 
-import { Link } from "@tanstack/react-router";
+- [✅] **Car Creation And Editing Panel. CRUD Operations (20 points):** Enable users to create, update, and delete cars. A car has two attributes: "name" and "color". Empty and too long names should be handled. For "delete"-operation car should be deleted from "garage" table as well as from "winners".
+- [✅] **Color Selection (10 points):** Allow color selection from an RGB palette ([like here](https://colorspire.com/rgb-color-wheel/)), displaying the selected color on the car's image along with its name.
+- [✅] **Random Car Creation (20 points):** There should be a button to create random cars (100 cars per click). Name should be assembled from two random parts, for example "Tesla" + "Model S", or "Ford" + "Mustang" (At least 10 different names for each part). Color should be also generated randomly.
+- [✅] **Car Management Buttons (10 points):** Provide buttons near each car's image for updating its attributes or deleting it.
+- [✅] **Pagination (10 points):** Implement pagination for the "Garage" view, displaying 7 cars per page.
+- [✅] **EXTRA POINTS (20 points):**
+  - [✅] **Empty Garage** Handle empty garage with user friendly message "No Cars" or something like this. Do it at your discretion.
+  - [✅] **Empty Garage Page** If you remove the last one car on the page, you should be moved on the previous page, to hide the empty one.
 
-export const Route = createRootRoute({
-  component: () => (
-    <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
+## 🏆 Winners View (50 points)
 
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
+- [ ] **Display Winners (15 points):** After some car wins it should be displayed at the "Winners view" table.
+- [ ] **Pagination for Winners (10 points):** Implement pagination for the "Winners" view, with 10 winners per page.
+- [ ] **Winners Table (15 points):** The table should include columns for the car's №, image, name, number of wins, and best time in seconds. If the same car wins more than once the number of wins should be incremented while best time should be saved only if it's better than the stored one.
+- [ ] **Sorting Functionality (10 points):** Allow users to sort the table by the number of wins and best time, in ascending or descending order.
 
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
+## 🚗 Race (170 points)
 
+- [ ] **Start Engine Animation (20 points):** User clicks to the engine start button near each car -> UI is waiting for car's velocity answer -> animate the car and makes another request to drive. In case api returned 500 error car animation should be stopped.
+- [ ] **Stop Engine Animation (20 points):** User clicks to the engine stop button near each car -> UI is waiting for answer for stopping engine -> car returned to it's initial place.
+- [ ] **Responsive Animation (30 points):** Ensure car animations are fluid and responsive on screens as small as 500px.
+- [ ] **Start Race Button (10 points):** Start button should start the race for all cars on the current page.
+- [ ] **Reset Race Button (15 points):** Reset button should return all cars to their starting positions.
+- [ ] **Winner Announcement (5 points):** After some car finishes first user should see the message contains car's name that shows which one has won.
+- [ ] **Button States (20 points):** Start engine button should be disabled in case car is already in driving mode. As well as stop engine button should be disabled when car is on it's initial place.
+- [ ] **Actions during the race (50 points):** Control over actions during a running race. Such as, deleting or editing a car, changing a page or view. Adding new cars. You can block buttons and stop the race. The main thing is to ensure predictable operation of the application.
 
-## Data Fetching
+## 🎨 Prettier and ESLint Configuration (10 points)
 
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
+- [ ] **Prettier Setup (5 points):** Prettier is correctly set up with two scripts in `package.json`: `format` for auto-formatting and `ci:format` for checking issues.
+- [ ] **ESLint Configuration (5 points):** ESLint is configured with the [Airbnb style guide](https://www.npmjs.com/package/eslint-config-airbnb). A `lint` script in `package.json` runs ESLint checks. Configuration files should reflect strict TypeScript settings as per `tsconfig.json`.
 
-For example:
+## 🌟 Overall Code Quality. (100 points) _Skip during self-check_
 
-```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/people",
-  loader: async () => {
-    const response = await fetch("https://swapi.dev/api/people");
-    return response.json() as Promise<{
-      results: {
-        name: string;
-      }[];
-    }>;
-  },
-  component: () => {
-    const data = peopleRoute.useLoaderData();
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    );
-  },
-});
-```
+- [ ] **(Up to 100 points)** Discretionary points awarded by the reviewer based on overall code quality, readability
+  - [ ] **Modular Design** The application should be clearly divided into logical modules or layers, such as API interaction, UI rendering, and state management.
+  - [ ] **Function Modularization** Code should be organized into small, clearly named functions with specific purposes. Common functions moved to helper. Each function should not exceed 40 lines.
+  - [ ] **Code Duplication and Magic Numbers** Minimize code duplication and maintain readability by avoiding the use of magic numbers or strings throughout the codebase.
+  - [ ] **Readability** Clear, readable code. Understandable names of variables, functions, modules
+  - [ ] **Extra features** _Example for React: Custom hooks, Portals, React Router_
 
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
+## 🔄 Evaluation Rules
 
-### React-Query
-
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
-
-First add your dependencies:
-
-```bash
-npm install @tanstack/react-query @tanstack/react-query-devtools
-```
-
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
-
-```tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-// ...
-
-const queryClient = new QueryClient();
-
-// ...
-
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
-}
-```
-
-You can also add TanStack Query Devtools to the root route (optional).
-
-```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-});
-```
-
-Now you can use `useQuery` to fetch your data.
-
-```tsx
-import { useQuery } from "@tanstack/react-query";
-
-import "./App.css";
-
-function App() {
-  const { data } = useQuery({
-    queryKey: ["people"],
-    queryFn: () =>
-      fetch("https://swapi.dev/api/people")
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
-  });
-
-  return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-export default App;
-```
-
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
-
-## State Management
-
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
-
-First you need to add TanStack Store as a dependency:
-
-```bash
-npm install @tanstack/store
-```
-
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-function App() {
-  const count = useStore(countStore);
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  );
-}
-
-export default App;
-```
-
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
-
-Let's check this out by doubling the count using derived state.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store, Derived } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
-});
-doubledStore.mount();
-
-function App() {
-  const count = useStore(countStore);
-  const doubledCount = useStore(doubledStore);
-
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  );
-}
-
-export default App;
-```
-
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
-
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
-
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+- **[@Candidate]** The UI should be deployed to gh-pages, Netlify, or a similar service, and the link should be included in the `README.md`.
+- **[@Reviewer]** You should clone the [server repository](https://github.com/mikhama/async-race-api.git) and keep the server running during the functionality review.
+- **[@Reviewer]** Test task should be evaluated based on both functional and non-functional requirements.
+- **[@Candidate]** Pay close attention to details in the implementation, as bugs and deviations from the requirements can impact your score.
+- **[@Reviewer]** If bugs are found, the following deductions can be applied:
+  - (**-30**) Major bug (implemented functionality works but breaks down after certain manipulations, with unexpected errors in the browser's console).
+  - (**-10**) Minor bug (implemented functionality works but behaves inconsistently after certain manipulations, such as a button not becoming enabled after changing some state, with no errors in the browser's console).
+  - **Note:** If you repeatedly press the "start engine button" then the "stop engine button" or the "start race button" then the "reset race button" and see a "404" or "429" error, this is not considered a bug.

@@ -1,7 +1,7 @@
-import z from "zod";
+import z from 'zod'
 
 export const getCarSchema = z.object({
-	id: z.number().positive(),
-});
+  id: z.number().positive(),
+})
 
-export type GetCarSchema = z.infer<typeof getCarSchema>;
+export type GetCarSchema = z.infer<typeof getCarSchema>
