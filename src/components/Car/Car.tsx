@@ -1,46 +1,129 @@
-import { motorRacingHelmet } from '@lucide/lab'
-import { Car as CarIcon, Icon } from 'lucide-react'
-import finishIcon from '@/assets/finish.svg'
-import { cn } from '@/lib/utils'
-import type { Car as TCar } from '@/types/car'
-import { RaceTrack } from '../ui/RaceTrack'
-import { CarActions } from './CarActions'
+import { motorRacingHelmet } from "@lucide/lab";
+import { Car as CarIcon, Icon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import finishIcon from "@/assets/icons/finish.svg";
+import { cn } from "@/lib/utils";
+import { engineActions } from "@/store/engine/engineSlice";
+import { useAppDispatch } from "@/store/hooks";
+import { winnersActions } from "@/store/winners/winnersSlice";
+import { CarStatus, type Car as TCar } from "@/types/car";
+import { RaceTrack } from "../ui/RaceTrack";
+import { CarActions } from "./CarActions";
 
 interface Props {
-  className?: string
-  car: TCar
+	className?: string;
+	car: TCar;
 }
 
 export const Car = ({ className, car }: Props) => {
-  return (
-    <div className={cn('flex items-center gap-x-3 p-0', className)}>
-      <CarActions car={car} className="mr-8" />
-      <div className="flex flex-col p-0 -translate-y-1 ">
-        <span className="text-sm font-semibold text-white -mb-6 leading-0">
-          {car.name}
-        </span>
-        <Icon
-          className="p-0 translate-y-15 translate-x-8 "
-          style={{
-            color: car.color,
-          }}
-          iconNode={motorRacingHelmet}
-        />
-        <CarIcon
-          size={100}
-          style={{
-            color: car.color,
-          }}
-        />
-      </div>
-      <RaceTrack />
-      <img
-        className="-translate-y-2"
-        src={finishIcon}
-        alt="finish"
-        width={50}
-        height={50}
-      />
-    </div>
-  )
-}
+	const trackRef = useRef<HTMLDivElement | null>(null);
+
+	const [trackDistance, setTrackDistance] = useState(0);
+	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		if (!trackRef.current) return;
+		const observer = new ResizeObserver(([entry]) => {
+			setTrackDistance(entry.contentRect.width);
+		});
+		observer.observe(trackRef.current);
+
+		return () => observer.disconnect();
+	}, []);
+
+	return (
+		<div className={cn("flex items-center gap-x-3 p-0", className)}>
+			<CarActions
+				car={car}
+				className="mr-8"
+				renderCar={(status, isBroken, data) => {
+					if (!trackDistance) return null;
+
+					const velocity = data?.velocity ?? 0;
+					let translateX = 0;
+					let transition = "";
+
+					if (status === CarStatus.Drive && !isBroken) {
+						const extraDistance = 130;
+						const speedDivisor = 1;
+						const minDuration = 1;
+						const maxDuration = 7;
+
+						translateX = trackDistance + extraDistance;
+
+						const duration = Math.min(
+							maxDuration,
+							Math.max(minDuration, trackDistance / (velocity / speedDivisor)),
+						);
+						transition = `transform ${duration}s linear`;
+					} else if (status === CarStatus.Stopped) {
+						translateX = 0;
+						transition = "transform 1.2s ease-in-out";
+					}
+
+					return (
+						<div
+							className={cn(
+								"flex flex-col p-0 -translate-y-3 relative transition-transform duration-300 ease",
+								{
+									"opacity-70": isBroken,
+								},
+							)}
+							style={
+								status === CarStatus.Drive || status === CarStatus.Stopped
+									? {
+											transform: `translateX(${translateX}px)`,
+											transition,
+										}
+									: {}
+							}
+							onTransitionEnd={(e) => {
+								if (isBroken || status !== CarStatus.Drive) return;
+
+								dispatch(engineActions.setStatus("finished"));
+								dispatch(
+									winnersActions.setWinner({
+										id: car.id,
+										time: e.elapsedTime,
+										name: car.name,
+									}),
+								);
+							}}
+						>
+							<span className="text-sm font-semibold text-white -mb-8 ml-2">
+								{car.name}
+							</span>
+
+							<Icon
+								className={cn("p-0 translate-y-15 translate-x-8", {
+									"animate-vibrate": status === "started",
+								})}
+								style={{
+									color: car.color,
+								}}
+								iconNode={motorRacingHelmet}
+							/>
+
+							<CarIcon
+								className={status === "started" ? "animate-vibrate" : ""}
+								size={110}
+								style={{
+									color: car.color,
+								}}
+							/>
+						</div>
+					);
+				}}
+			/>
+
+			<RaceTrack ref={trackRef} className="mr-10" />
+			<img
+				className="-translate-y-2"
+				src={finishIcon}
+				alt="finish"
+				width={50}
+				height={50}
+			/>
+		</div>
+	);
+};

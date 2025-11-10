@@ -16,7 +16,7 @@ import type {
 	UpdateCarResponse,
 } from "./types";
 
-export const carsApi = baseApi.injectEndpoints({
+export const winnersApi = baseApi.injectEndpoints({
 	endpoints: (builder) => ({
 		getAll: builder.query<GetAllCarsResponse, GetAllCarsRequest>({
 			query: (params) => ({
@@ -24,15 +24,9 @@ export const carsApi = baseApi.injectEndpoints({
 				params: params,
 			}),
 			onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
-				const data = await queryFulfilled;
-				const totalCount = data.meta?.response?.headers.get(TOTAL_COUNT_HEADER);
+				const dat = await queryFulfilled;
+				const totalCount = dat.meta?.response?.headers.get(TOTAL_COUNT_HEADER);
 
-				dispatch(
-					carsActions.setCurrentPageCarsCount({
-						type: "bulk",
-						number: data.data.length,
-					}),
-				);
 				if (totalCount && Number.parseInt(totalCount, 10)) {
 					dispatch(carsActions.setTotalCount(+totalCount));
 				}
@@ -57,7 +51,7 @@ export const carsApi = baseApi.injectEndpoints({
 				const { filters, totalCount } = (getState() as RootState).cars;
 
 				dispatch(
-					carsApi.util.updateQueryData("getAll", filters, (data) => {
+					winnersApi.util.updateQueryData("getAll", filters, (data) => {
 						if (data.length === GET_CARS_MAX_LIMIT) {
 							const nextPage = Math.ceil(
 								((totalCount ?? 1) + 1) / GET_CARS_MAX_LIMIT,
@@ -69,15 +63,11 @@ export const carsApi = baseApi.injectEndpoints({
 									data: nextPage,
 								}),
 							);
-							return;
 						}
 
 						data.push(reponseData);
 						dispatch(
 							carsActions.setTotalCount(!totalCount ? 1 : totalCount + 1),
-						);
-						dispatch(
-							carsActions.setCurrentPageCarsCount({ type: "increment" }),
 						);
 					}),
 				);
@@ -95,7 +85,7 @@ export const carsApi = baseApi.injectEndpoints({
 				const { filters } = (getState() as RootState).cars;
 
 				dispatch(
-					carsApi.util.updateQueryData("getAll", filters, (data) => {
+					winnersApi.util.updateQueryData("getAll", filters, (data) => {
 						const index = data.findIndex((c) => c.id === car.id);
 						if (index !== -1) data[index] = car;
 					}),
@@ -114,9 +104,6 @@ export const carsApi = baseApi.injectEndpoints({
 
 				if (totalCount && totalCount === 1) {
 					dispatch(carsActions.setTotalCount(0));
-					dispatch(
-						carsActions.setCurrentPageCarsCount({ type: "bulk", number: 0 }),
-					);
 					return;
 				}
 
@@ -144,4 +131,4 @@ export const {
 	useCreateMutation,
 	useUpdateMutation,
 	useDeleteMutation,
-} = carsApi;
+} = winnersApi;
