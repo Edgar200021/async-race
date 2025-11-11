@@ -160,8 +160,9 @@ export const CarActions = ({ car, className, renderCar }: Props) => {
 						onClick={async () => {
 							if (status === "stopped") return;
 
-							await onClick(CarStatus.Stopped);
 							dispatch(winnersActions.setIsCancelledDuringRace(true));
+
+							await onClick(CarStatus.Stopped);
 							dispatch(
 								engineActions.setReadyCar({ type: "remove", carId: car.id }),
 							);
