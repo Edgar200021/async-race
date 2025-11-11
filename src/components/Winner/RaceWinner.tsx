@@ -48,7 +48,7 @@ export const RaceWinner = ({ className }: Props) => {
 	}, [engineStatus]);
 
 	useEffect(() => {
-		if (!winner || isCancelledDuringRace) return;
+		if (!engineStatus || !winner || isCancelledDuringRace) return;
 		(async () => {
 			const { data, error } = await getWinner({ id: winner.id });
 			if (data) {
@@ -63,11 +63,14 @@ export const RaceWinner = ({ className }: Props) => {
 				await createWinner({ id: winner.id, wins: 1, time: winner.time });
 			}
 		})();
-	}, [winner, isCancelledDuringRace]);
+	}, [engineStatus, winner, isCancelledDuringRace]);
 
-	const showDialog = !!engineStatus && !!winner && !isCancelledDuringRace;
-
-	if (!showDialog) return null;
+	if (
+		!engineStatus ||
+		(engineStatus && !winner) ||
+		(engineStatus && winner && isCancelledDuringRace)
+	)
+		return null;
 
 	return (
 		<Dialog defaultOpen>
