@@ -1,1 +1,1 @@
-export const GENERATED_CARS_LENGTH = 100;
+export const GENERATED_CARS_LENGTH = 100

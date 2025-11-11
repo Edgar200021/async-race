@@ -1,8 +1,5 @@
-import z from 'zod'
+import type z from 'zod'
+import { paginationSchema } from '../base'
 
-export const getCarsSchema = z.object({
-  _limit: z.number().positive().optional(),
-  _page: z.number().positive().optional(),
-})
-
+export const getCarsSchema = paginationSchema
 export type GetCarsSchema = z.infer<typeof getCarsSchema>

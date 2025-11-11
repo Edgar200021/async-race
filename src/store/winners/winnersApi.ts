@@ -1,134 +1,121 @@
-import { TOTAL_COUNT_HEADER } from "@/const/api";
-import { GET_CARS_MAX_LIMIT, TAGS } from "@/const/store";
-import { baseApi } from "../baseApi";
-import type { RootState } from "../store";
-import { carsActions } from "./carsSlice";
+import { id } from 'zod/v4/locales'
+import { TOTAL_COUNT_HEADER } from '@/const/api'
+import { GET_CARS_MAX_LIMIT, GET_WINNERS_MAX_LIMIT, TAGS } from '@/const/store'
+import { handleEntityAdded } from '@/lib/utils'
+import { baseApi } from '../baseApi'
+import type { RootState } from '../store'
 import type {
-	CreateCarRequest,
-	CreateCarResponse,
-	DeleteCarRequest,
-	DeleteCarResponse,
-	GetAllCarsRequest,
-	GetAllCarsResponse,
-	GetCarRequest,
-	GetCarResponse,
-	UpdateCarRequest,
-	UpdateCarResponse,
-} from "./types";
+  CreateWinnerRequest,
+  CreateWinnerResponse,
+  DeleteWinnerRequest,
+  DeleteWinnerResponse,
+  GetAllWinnersRequest,
+  GetAllWinnersResponse,
+  GetWinnerRequest,
+  GetWinnerResponse,
+  UpdateWinnerRequest,
+  UpdateWinnerResponse,
+} from './types'
+import { winnersActions } from './winnersSlice'
 
 export const winnersApi = baseApi.injectEndpoints({
-	endpoints: (builder) => ({
-		getAll: builder.query<GetAllCarsResponse, GetAllCarsRequest>({
-			query: (params) => ({
-				url: "/garage",
-				params: params,
-			}),
-			onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
-				const dat = await queryFulfilled;
-				const totalCount = dat.meta?.response?.headers.get(TOTAL_COUNT_HEADER);
+  endpoints: (builder) => ({
+    getAllWinners: builder.query<GetAllWinnersResponse, GetAllWinnersRequest>({
+      query: (params) => ({
+        url: '/winners',
+        params: params,
+      }),
 
-				if (totalCount && Number.parseInt(totalCount, 10)) {
-					dispatch(carsActions.setTotalCount(+totalCount));
-				}
-			},
-			providesTags: [TAGS.cars],
-		}),
+      onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
+        const data = await queryFulfilled
+        const totalCount = data.meta?.response?.headers.get(TOTAL_COUNT_HEADER)
 
-		getOne: builder.query<GetCarResponse, GetCarRequest>({
-			query: ({ id }) => ({
-				url: `/garage/${id}`,
-			}),
-		}),
+        if (totalCount && Number.parseInt(totalCount, 10)) {
+          dispatch(winnersActions.setTotalCount(+totalCount))
+        }
+      },
 
-		create: builder.mutation<CreateCarResponse, CreateCarRequest>({
-			query: (body) => ({
-				url: "/garage",
-				method: "POST",
-				body,
-			}),
-			onQueryStarted: async (_, { dispatch, queryFulfilled, getState }) => {
-				const { data: reponseData } = await queryFulfilled;
-				const { filters, totalCount } = (getState() as RootState).cars;
+      providesTags: [TAGS.cars],
+    }),
 
-				dispatch(
-					winnersApi.util.updateQueryData("getAll", filters, (data) => {
-						if (data.length === GET_CARS_MAX_LIMIT) {
-							const nextPage = Math.ceil(
-								((totalCount ?? 1) + 1) / GET_CARS_MAX_LIMIT,
-							);
+    getOneWinner: builder.query<GetWinnerResponse, GetWinnerRequest>({
+      query: ({ id }) => ({
+        url: `/winners/${id}`,
+      }),
+    }),
 
-							dispatch(
-								carsActions.setFilters({
-									key: "_page",
-									data: nextPage,
-								}),
-							);
-						}
+    createWinner: builder.mutation<CreateWinnerResponse, CreateWinnerRequest>({
+      query: (body) => ({
+        url: '/winners',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: [TAGS.winners],
+    }),
 
-						data.push(reponseData);
-						dispatch(
-							carsActions.setTotalCount(!totalCount ? 1 : totalCount + 1),
-						);
-					}),
-				);
-			},
-		}),
+    updateWinner: builder.mutation<UpdateWinnerResponse, UpdateWinnerRequest>({
+      query: ({ id, ...body }) => ({
+        url: `/winners/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      onQueryStarted: async (
+        winner,
+        { queryFulfilled, getState, dispatch },
+      ) => {
+        await queryFulfilled
+        const { filters } = (getState() as RootState).winners
 
-		update: builder.mutation<UpdateCarResponse, UpdateCarRequest>({
-			query: ({ id, ...body }) => ({
-				url: `/garage/${id}`,
-				method: "PUT",
-				body,
-			}),
-			onQueryStarted: async (car, { queryFulfilled, getState, dispatch }) => {
-				await queryFulfilled;
-				const { filters } = (getState() as RootState).cars;
+        dispatch(
+          winnersApi.util.updateQueryData('getAllWinners', filters, (data) => {
+            const index = data.findIndex((w) => w.id === winner.id)
+            if (index !== -1) {
+              data[index] = winner
+              return
+            }
 
-				dispatch(
-					winnersApi.util.updateQueryData("getAll", filters, (data) => {
-						const index = data.findIndex((c) => c.id === car.id);
-						if (index !== -1) data[index] = car;
-					}),
-				);
-			},
-		}),
+            winnersApi.util.invalidateTags([TAGS.winners])
+          }),
+        )
+      },
+    }),
 
-		delete: builder.mutation<DeleteCarResponse, DeleteCarRequest>({
-			query: ({ id }) => ({
-				url: `/garage/${id}`,
-				method: "DELETE",
-			}),
-			onQueryStarted: async (_, { queryFulfilled, getState, dispatch }) => {
-				await queryFulfilled;
-				const { filters, totalCount } = (getState() as RootState).cars;
+    deleteWinner: builder.mutation<DeleteWinnerResponse, DeleteWinnerRequest>({
+      query: ({ id }) => ({
+        url: `/winners/${id}`,
+        method: 'DELETE',
+      }),
+      onQueryStarted: async (_, { queryFulfilled, getState, dispatch }) => {
+        await queryFulfilled
+        const { filters, totalCount } = (getState() as RootState).winners
 
-				if (totalCount && totalCount === 1) {
-					dispatch(carsActions.setTotalCount(0));
-					return;
-				}
+        if (totalCount && totalCount === 1) {
+          dispatch(winnersActions.setTotalCount(0))
+          return
+        }
 
-				if (
-					totalCount &&
-					totalCount !== 1 &&
-					totalCount % GET_CARS_MAX_LIMIT === 1
-				) {
-					dispatch(
-						carsActions.setFilters({
-							key: "_page",
-							data: filters._page ? filters._page - 1 : 1,
-						}),
-					);
-				}
-			},
-			invalidatesTags: [TAGS.cars],
-		}),
-	}),
-});
+        if (
+          totalCount &&
+          totalCount !== 1 &&
+          totalCount % GET_WINNERS_MAX_LIMIT === 1
+        ) {
+          dispatch(
+            winnersActions.setFilters({
+              key: '_page',
+              data: filters._page ? filters._page - 1 : 1,
+            }),
+          )
+        }
+      },
+      invalidatesTags: [TAGS.winners],
+    }),
+  }),
+})
 
 export const {
-	useLazyGetAllQuery,
-	useGetOneQuery,
-	useCreateMutation,
-	useUpdateMutation,
-	useDeleteMutation,
-} = winnersApi;
+  useLazyGetAllWinnersQuery,
+  useLazyGetOneWinnerQuery,
+  useCreateWinnerMutation,
+  useUpdateWinnerMutation,
+  useDeleteWinnerMutation,
+} = winnersApi

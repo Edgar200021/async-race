@@ -3,9 +3,9 @@ import type { FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 
-export const useHandleError = (error?: unknown) => {
+export const useHandleError = (error: unknown, disabled?: boolean) => {
   useEffect(() => {
-    if (!error) return
+    if (!error || disabled) return
 
     if ((error as FetchBaseQueryError).status === 404) {
       toast.error('Not found')
@@ -14,5 +14,5 @@ export const useHandleError = (error?: unknown) => {
     if ((error as SerializedError).message !== undefined) {
       toast.error((error as SerializedError).message!)
     }
-  }, [error])
+  }, [error, disabled])
 }

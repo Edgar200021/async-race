@@ -1,1 +1,1 @@
-export type EngineStatus = "stopped" | "started" | "inProgress" | "finished";
+export type EngineStatus = 'stopped' | 'started' | 'inProgress' | 'finished'
