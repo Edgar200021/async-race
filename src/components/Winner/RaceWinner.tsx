@@ -29,6 +29,7 @@ export const RaceWinner = ({ className }: Props) => {
 	const isCancelledDuringRace = useAppSelector(
 		winnersSelectors.getIsCancelledDuringRace,
 	);
+	const busyCarsLength = useAppSelector(engineSelectors.getBusyCars)?.length;
 	const engineStatus = useAppSelector(engineSelectors.getStatus);
 	const [getWinner, { error }] = useLazyGetOneWinnerQuery();
 	const [createWinner, { error: createWinnerError }] =
@@ -66,9 +67,10 @@ export const RaceWinner = ({ className }: Props) => {
 	}, [engineStatus, winner, isCancelledDuringRace]);
 
 	if (
+		(busyCarsLength && busyCarsLength > 0) ||
 		!engineStatus ||
-		(engineStatus && !winner) ||
-		(engineStatus && winner && isCancelledDuringRace)
+		!winner ||
+		isCancelledDuringRace
 	)
 		return null;
 
