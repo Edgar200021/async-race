@@ -21,11 +21,13 @@
 3. $ npm install
 4. $ npm start
 ```
+
 ### Frontend
-Go to [Demo SPA](https://timurgain.github.io/async-race/) or install and run the frontend locally:
+
+Go to [Demo SPA]() or install and run the frontend locally:
 
 ```bash
-1. $ git clone https://github.com/timurgain/async-race.git
+1. $ git clone https://github.com/Edgar200021/async-race.git
 2. $ cd async-race
 3. $ npm install
 4. $ npm run dev
