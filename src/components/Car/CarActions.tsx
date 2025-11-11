@@ -139,12 +139,6 @@ export const CarActions = ({ car, className, renderCar }: Props) => {
 									}
 									className="cursor-pointer bg-red-500 hover:bg-red-600"
 									onClick={async () => {
-										dispatch(
-											engineActions.setBusyCar({
-												type: "remove",
-												carId: car.id,
-											}),
-										);
 										await deleteCar();
 										toast.success(`Car #${car.id} successfully deleted`);
 									}}
@@ -161,6 +155,12 @@ export const CarActions = ({ car, className, renderCar }: Props) => {
 							if (status === "stopped") return;
 
 							dispatch(winnersActions.setIsCancelledDuringRace(true));
+							dispatch(
+								engineActions.setBusyCar({
+									type: "remove",
+									carId: car.id,
+								}),
+							);
 
 							await onClick(CarStatus.Stopped);
 							dispatch(
