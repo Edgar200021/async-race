@@ -17,7 +17,10 @@ const initialState: State = {
 	busyCars: null,
 };
 
-type SetCar = ({ type: "remove" } | { type: "set" }) & { carId: Car["id"] };
+type SetCar = ({ action: "remove" } | { action: "set" }) & {
+	type: "ready" | "busy" | "broken";
+	carId: Car["id"];
+};
 
 export const engineSlice = createSlice({
 	name: "engine",
@@ -27,33 +30,29 @@ export const engineSlice = createSlice({
 			if (payload === "finished" && !state.status) return;
 			state.status = payload;
 		},
-		setReadyCar: (state, { payload }: PayloadAction<SetCar>) => {
-			if (!state.readyCars) state.readyCars = [];
+		setCar: (
+			state,
+			{ payload: { type, carId, action } }: PayloadAction<SetCar>,
+		) => {
+			const key: keyof Omit<State, "status"> =
+				type === "ready"
+					? "readyCars"
+					: type === "broken"
+						? "brokenCars"
+						: "busyCars";
 
-			if (payload.type === "set" && !state.readyCars.includes(payload.carId)) {
-				state.readyCars.push(payload.carId);
+			if (!state[key]) state[key] = [];
+
+			if (action === "set" && !state[key].includes(carId)) {
+				state[key].push(carId);
 				return;
 			}
 
-			state.readyCars = state.readyCars.filter((id) => id !== payload.carId);
-		},
-		setBrokenCar: (state, { payload }: PayloadAction<{ carId: Car["id"] }>) => {
-			if (!state.brokenCars) state.brokenCars = [];
+			state[key] = state[key].filter((id) => id !== carId);
 
-			if (!state.brokenCars.includes(payload.carId)) {
-				state.brokenCars.push(payload.carId);
+			if (!state[key].length) {
+				state[key] = null;
 			}
-		},
-
-		setBusyCar: (state, { payload }: PayloadAction<SetCar>) => {
-			if (!state.busyCars) state.busyCars = [];
-
-			if (payload.type === "set" && !state.busyCars.includes(payload.carId)) {
-				state.busyCars.push(payload.carId);
-				return;
-			}
-
-			state.busyCars = state.busyCars.filter((id) => id !== payload.carId);
 		},
 
 		clearState: (state) => {

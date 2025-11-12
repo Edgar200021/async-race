@@ -84,7 +84,11 @@ export const CarActions = ({ car, className, renderCar }: Props) => {
 								return;
 
 							dispatch(
-								engineActions.setBusyCar({ type: "set", carId: car.id }),
+								engineActions.setCar({
+									type: "busy",
+									action: "set",
+									carId: car.id,
+								}),
 							);
 							await onClick(CarStatus.Started);
 						}}
@@ -156,15 +160,30 @@ export const CarActions = ({ car, className, renderCar }: Props) => {
 
 							dispatch(winnersActions.setIsCancelledDuringRace(true));
 							dispatch(
-								engineActions.setBusyCar({
-									type: "remove",
+								engineActions.setCar({
+									type: "busy",
+									action: "remove",
 									carId: car.id,
 								}),
 							);
 
+							if (isBroken) {
+								dispatch(
+									engineActions.setCar({
+										type: "broken",
+										action: "remove",
+										carId: car.id,
+									}),
+								);
+							}
+
 							await onClick(CarStatus.Stopped);
 							dispatch(
-								engineActions.setReadyCar({ type: "remove", carId: car.id }),
+								engineActions.setCar({
+									type: "ready",
+									action: "remove",
+									carId: car.id,
+								}),
 							);
 						}}
 						variant="ghost"

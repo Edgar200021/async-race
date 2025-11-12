@@ -20,6 +20,11 @@ export const useHandleEnginee = (carId: Car["id"]) => {
 	] = useDriveEngineMutation();
 
 	const onClick = async (status: Exclude<CarStatus, CarStatus.Drive>) => {
+		setIsBroken(false);
+		if (status === CarStatus.Stopped) {
+			setStatus(CarStatus.Stopped);
+		}
+
 		try {
 			await requestWithSchema(
 				toggleEngineSchema,

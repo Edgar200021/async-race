@@ -51,7 +51,10 @@ export const EngineActions = ({ className }: Props) => {
 
 				<Button
 					disabled={
-						status === "stopped" || status === "started" || status === null
+						(busyCarsLength && busyCarsLength > 0) ||
+						status === "stopped" ||
+						status === "started" ||
+						status === null
 					}
 					onClick={() => onClick("stopped")}
 					className={cn(

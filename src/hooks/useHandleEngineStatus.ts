@@ -33,15 +33,21 @@ export const useHandleEngineStatus = (carId: Car["id"]) => {
 			data.status === CarStatus.Drive &&
 			data.isBroken
 		) {
-			dispatch(engineActions.setBrokenCar({ carId: carId }));
+			dispatch(
+				engineActions.setCar({ type: "broken", action: "set", carId: carId }),
+			);
 		}
 
 		if (engineStatus === "started" && data.status === CarStatus.Drive) {
-			dispatch(engineActions.setReadyCar({ type: "set", carId: carId }));
+			dispatch(
+				engineActions.setCar({ type: "ready", action: "set", carId: carId }),
+			);
 		}
 
 		if (engineStatus === "stopped" && data.status === CarStatus.Stopped) {
-			dispatch(engineActions.setReadyCar({ type: "remove", carId: carId }));
+			dispatch(
+				engineActions.setCar({ type: "ready", action: "remove", carId: carId }),
+			);
 		}
 	}, [engineStatus, data.status, carId, data.isBroken]);
 

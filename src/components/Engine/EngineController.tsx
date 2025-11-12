@@ -9,14 +9,26 @@ export const EngineController = () => {
 	);
 	const readyCars = useAppSelector(engineSelectors.getReadyCars);
 	const brokenCars = useAppSelector(engineSelectors.getBrokenCars);
+	const busyCars = useAppSelector(engineSelectors.getBusyCars);
 
 	const status = useAppSelector(engineSelectors.getStatus);
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		if (currentPageCarsCount === 0 || !readyCars) return;
+		if (currentPageCarsCount === 0) {
+			return;
+		}
 
-		if (status === "started" && currentPageCarsCount === readyCars.length) {
+		if (
+			(status === "finished" || status === "inProgress") &&
+			!readyCars &&
+			!brokenCars &&
+			!busyCars
+		) {
+			dispatch(engineActions.clearState());
+		}
+
+		if (status === "started" && currentPageCarsCount === readyCars?.length) {
 			dispatch(engineActions.setStatus("inProgress"));
 		}
 
@@ -27,13 +39,10 @@ export const EngineController = () => {
 			dispatch(engineActions.setStatus("finished"));
 		}
 
-		if (
-			(status === "stopped" && readyCars.length === 0) ||
-			readyCars.length === 0
-		) {
+		if (status === "stopped" && (!readyCars || readyCars?.length === 0)) {
 			dispatch(engineActions.clearState());
 		}
-	}, [currentPageCarsCount, readyCars, brokenCars, status]);
+	}, [currentPageCarsCount, readyCars, brokenCars, busyCars, status]);
 
 	return null;
 };
